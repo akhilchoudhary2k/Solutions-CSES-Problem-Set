@@ -1,3 +1,6 @@
+#pragma GCC optimize("Ofast")
+#pragma GCC optimize ("unroll-loops")
+
 #include<bits/stdc++.h>
 using namespace std;
 #define vi vector<int>
@@ -100,41 +103,6 @@ int bfs(vvi & g, int root){
 
 
 
-
-
-
-
-// ans, max depth
-pair<int,int> dfs(int cur, vector<vector<int>> & g , vector<int> & vis){
-	vis[cur] = 1;
-	
-	pair<int,int> ans = {0,depth[cur]};
-	multiset<int> s;
-
-	for(int nbr : g[cur]){
-		if(!vis[nbr]){
-			depth[nbr] = 1+depth[cur];
-			auto temp = dfs(nbr, g, vis);
-			ans.second = max(ans.second , temp.second);
-			ans.first = max(ans.first , temp.first);
-			s.insert(temp.second - depth[cur]);
-		}
-	}
-
-	if(s.size()>1){
-		int temp = 0;
-		int x = *s.rbegin();
-		temp += x;
-		s.erase(s.find(x));
-		x = *s.rbegin();
-		temp += x;
-		ans.first = max(ans.first, temp);
-	}
-	ans.first = max(ans.first, ans.second);
-
-	return ans;
-} 
-
 void test_case(){
 
 	cin >> n;
@@ -147,26 +115,20 @@ void test_case(){
 		g[v].push_back(u);
 	}
 
-	// vector<int> vis(n);
-	// auto x = dfs(0,g,vis);
-	// cout << x.first <<"\n";
-
-
 	int  a = bfs(g,0);
 	int  b = bfs(g,a);
 
 	Binary_Lifting bl = Binary_Lifting(g);
 
-	cout << bl.get_distance(a,b) <<"\n";
-	// for(int i=0;i<n;i++){
-	// 	cout << max(bl.get_distance(i,a), bl.get_distance(i,b)) <<" ";
-	// }
-	// cout <<"\n";
+	for(int i=0;i<n;i++){
+		cout << max(bl.get_distance(i,a), bl.get_distance(i,b)) <<" ";
+	}
+	cout <<"\n";
 
 }
 
 int main(){
-	// ios_base::sync_with_stdio(false); cin.tie(nullptr);
+	ios_base::sync_with_stdio(false); cin.tie(nullptr);
 	int t=1;
 	// cin >> t;
 

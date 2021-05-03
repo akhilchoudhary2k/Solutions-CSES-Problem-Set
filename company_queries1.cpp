@@ -1,13 +1,6 @@
 #include<bits/stdc++.h>
 using namespace std;
-#define vi vector<int>
-#define pii pair<int,int>
-#define vvi vector<vector<int>>
-
-// 	we can also do it using BFS!!  2 times
-int n;
-vector<int> depth(200005);
-
+#define int long long
 
 class Binary_Lifting{
 	// with N*log(N) pre processing,  N nodes with 0 to N-1 lables
@@ -72,101 +65,32 @@ class Binary_Lifting{
 	}
 };
 
-// returns the last visited node in BFS (farthest node from root)
-int bfs(vvi & g, int root){
-	int n = g.size();
-	vi vis(n);
-	int ans=root;
-
-	queue<int> q;
-	q.push(root);
-	vis[root]=1;
-
-	while(q.size()){
-		int f = q.front();
-		q.pop();
-		ans = f;
-
-		for(int nbr : g[f]){
-			if(!vis[nbr]){
-				vis[nbr]=1;
-				q.push(nbr);
-			}
-		}
-	}
-
-	return ans;
-}
-
-
-
-
-
-
-
-// ans, max depth
-pair<int,int> dfs(int cur, vector<vector<int>> & g , vector<int> & vis){
-	vis[cur] = 1;
-	
-	pair<int,int> ans = {0,depth[cur]};
-	multiset<int> s;
-
-	for(int nbr : g[cur]){
-		if(!vis[nbr]){
-			depth[nbr] = 1+depth[cur];
-			auto temp = dfs(nbr, g, vis);
-			ans.second = max(ans.second , temp.second);
-			ans.first = max(ans.first , temp.first);
-			s.insert(temp.second - depth[cur]);
-		}
-	}
-
-	if(s.size()>1){
-		int temp = 0;
-		int x = *s.rbegin();
-		temp += x;
-		s.erase(s.find(x));
-		x = *s.rbegin();
-		temp += x;
-		ans.first = max(ans.first, temp);
-	}
-	ans.first = max(ans.first, ans.second);
-
-	return ans;
-} 
-
 void test_case(){
-
-	cin >> n;
+	int n,q;
+	cin >> n >> q;
 	vector<vector<int>> g(n);
-	for(int i=0;i<n-1;i++){
-		int u,v;
-		cin >> u >> v;
-		u--;v--;			// 0 ... n-1 labeled
-		g[u].push_back(v);
-		g[v].push_back(u);
+	for(int i=1;i<n;i++){
+		int u;
+		cin >>u;
+		u--;
+		g[u].push_back(i);
+		g[i].push_back(u);
 	}
 
-	// vector<int> vis(n);
-	// auto x = dfs(0,g,vis);
-	// cout << x.first <<"\n";
+	Binary_Lifting B = Binary_Lifting(g,0);
 
-
-	int  a = bfs(g,0);
-	int  b = bfs(g,a);
-
-	Binary_Lifting bl = Binary_Lifting(g);
-
-	cout << bl.get_distance(a,b) <<"\n";
-	// for(int i=0;i<n;i++){
-	// 	cout << max(bl.get_distance(i,a), bl.get_distance(i,b)) <<" ";
-	// }
-	// cout <<"\n";
+	while(q--){
+		int x,k;
+		cin >> x >> k;
+		int ans = B.get_kth_ancestor(x-1,k);
+		cout << (ans==-1?ans:ans+1) <<"\n";
+	}
 
 }
 
-int main(){
-	// ios_base::sync_with_stdio(false); cin.tie(nullptr);
+signed main(){
+	ios_base::sync_with_stdio(false); cin.tie(0);
+	
 	int t=1;
 	// cin >> t;
 

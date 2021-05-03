@@ -1,13 +1,9 @@
+
+
+
+
 #include<bits/stdc++.h>
 using namespace std;
-#define vi vector<int>
-#define pii pair<int,int>
-#define vvi vector<vector<int>>
-
-// 	we can also do it using BFS!!  2 times
-int n;
-vector<int> depth(200005);
-
 
 class Binary_Lifting{
 	// with N*log(N) pre processing,  N nodes with 0 to N-1 lables
@@ -18,7 +14,7 @@ class Binary_Lifting{
 	// calling the get_lca function 				:  int val = temp.get_lca(a,b);
 	public :
 	// variables
-	int n, LOG = 20;  			// LOG is the number of bits required to represent n
+	int n, LOG = 21;  			// LOG is the number of bits required to represent n
 	vector<vector<int>> up; 	// up[n][LOG]
 	vector<int> depth;
 
@@ -66,107 +62,63 @@ class Binary_Lifting{
 		}
 		return up[a][0]; 					// a and b are child of LCA
 	}
-	int get_distance(int a,int b){
-		int lca = get_lca(a,b);
-		return depth[a]+depth[b]-2*depth[lca];
-	}
 };
 
-// returns the last visited node in BFS (farthest node from root)
-int bfs(vvi & g, int root){
-	int n = g.size();
-	vi vis(n);
-	int ans=root;
 
-	queue<int> q;
-	q.push(root);
-	vis[root]=1;
+void dfs(int cur, vector<vector<int>> &g , vector<int> & vis, vector<int> & pref){
+	vis[cur] = 1;
 
-	while(q.size()){
-		int f = q.front();
-		q.pop();
-		ans = f;
-
-		for(int nbr : g[f]){
-			if(!vis[nbr]){
-				vis[nbr]=1;
-				q.push(nbr);
-			}
+	for(int c : g[cur]){
+		if(!vis[c]){
+			dfs(c,g,vis,pref);
+			pref[cur] += pref[c];
 		}
 	}
-
-	return ans;
 }
 
-
-
-
-
-
-
-// ans, max depth
-pair<int,int> dfs(int cur, vector<vector<int>> & g , vector<int> & vis){
-	vis[cur] = 1;
-	
-	pair<int,int> ans = {0,depth[cur]};
-	multiset<int> s;
-
-	for(int nbr : g[cur]){
-		if(!vis[nbr]){
-			depth[nbr] = 1+depth[cur];
-			auto temp = dfs(nbr, g, vis);
-			ans.second = max(ans.second , temp.second);
-			ans.first = max(ans.first , temp.first);
-			s.insert(temp.second - depth[cur]);
-		}
-	}
-
-	if(s.size()>1){
-		int temp = 0;
-		int x = *s.rbegin();
-		temp += x;
-		s.erase(s.find(x));
-		x = *s.rbegin();
-		temp += x;
-		ans.first = max(ans.first, temp);
-	}
-	ans.first = max(ans.first, ans.second);
-
-	return ans;
-} 
-
 void test_case(){
+	int n,m;
+	cin >> n >> m;
 
-	cin >> n;
 	vector<vector<int>> g(n);
 	for(int i=0;i<n-1;i++){
 		int u,v;
 		cin >> u >> v;
-		u--;v--;			// 0 ... n-1 labeled
+		u--;v--;   				// ??
 		g[u].push_back(v);
 		g[v].push_back(u);
 	}
+	Binary_Lifting B = Binary_Lifting(g);
 
-	// vector<int> vis(n);
-	// auto x = dfs(0,g,vis);
-	// cout << x.first <<"\n";
+	// pref[u] = #paths node u is a part of
+	// pref[u] = pref[u] + sum(pref[v]), v = {children[u]}
+	vector<int> pref(n,0);
 
+	for(int i=0;i<m;i++){
+		int u,v;
+		cin >> u >> v;
+		u--;v--;
+		int lca = B.get_lca(u,v);
+		pref[u]++;
+		pref[v]++;
+		pref[lca]--;
+		
+		// it can be zero, but cant be equal to lca
+		if(B.up[lca][0] != lca) pref[B.up[lca][0]]--;	//	bug was here
 
-	int  a = bfs(g,0);
-	int  b = bfs(g,a);
+	}
 
-	Binary_Lifting bl = Binary_Lifting(g);
+	vector<int> vis(n);
+	dfs(0,g,vis,pref);
 
-	cout << bl.get_distance(a,b) <<"\n";
-	// for(int i=0;i<n;i++){
-	// 	cout << max(bl.get_distance(i,a), bl.get_distance(i,b)) <<" ";
-	// }
-	// cout <<"\n";
+	for(int x : pref) {
+		cout << x <<" "; 
+	}
 
 }
 
 int main(){
-	// ios_base::sync_with_stdio(false); cin.tie(nullptr);
+	ios_base::sync_with_stdio(false); cin.tie(nullptr);
 	int t=1;
 	// cin >> t;
 
