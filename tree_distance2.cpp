@@ -6,6 +6,7 @@ using namespace std;
 #define pii pair<int,int>
 #define vvi vector<vector<int>>
 
+
 int n;
 vector<int> vis(2e5+123), cnt(2e5+12);
 vector<int> ans(2e5+1);
