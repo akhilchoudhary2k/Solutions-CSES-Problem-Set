@@ -5,22 +5,22 @@ using namespace std;
 void test_case(){
 	int n,x;
 	cin >> n >> x;
-	vector<int> v(n);
-	for(int i=0;i<n;i++) cin >> v[i];
 
-	int pref=0;
-	unordered_map<int,int> mp;
+	int a[n];
+	for(int i=0;i<n;i++) cin >> a[i];
+
+	int ans = 0;
+	int pref = 0;
+	map<int,int> mp;
 	mp[pref]++;
 
-	int cnt=0;
-
 	for(int i=0;i<n;i++){
-		pref += v[i];
-		cnt += mp[pref-x];
-		// cout << "i=" << i <<" pref=" << pref << "[" << cnt <<"]" << endl;
+		pref += a[i];
+		ans += mp[pref-x];
 		mp[pref]++;
 	}
-	cout << cnt << endl;
+	cout << ans <<"\n";
+
 }
 
 signed main(){

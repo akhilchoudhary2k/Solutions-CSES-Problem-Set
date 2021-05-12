@@ -1,63 +1,52 @@
 #include<bits/stdc++.h>
 using namespace std;
+#define int long long
 
-	wrong answer .....
+// first see starting(not ending) at some day
 
 void test_case(){
 	int n;
 	cin >> n;
-
-	// 1-> arrival, 2-> departure
-	
-	vector< pair<int,int> > v;
-	
+	vector<array<int,3>> v;
 	for(int i=0;i<n;i++){
-		int a,b;
-		cin >> a >> b;
-		v.push_back({a, 1});
-		v.push_back({b, 2});
+		int x,y;
+		cin >> x >> y;
+		v.push_back({x,0,i});
+		v.push_back({y,1,i});
 	}
-
 	sort(v.begin(), v.end());
-
-	int req=0, curr=0;;
-	deque<int> taken;
-	deque<int> free;
-	vector<int> ans;
+	vector<int> ans(n);
+	
+	set<int> free;
+	free.insert(1);
+	int mx = 1;
 
 	for(auto x : v){
-		if(x.second == 2){
-			curr--;
-			free.push_back(taken.front());
-			taken.pop_front();
-			// free.insert(*taken.begin());
-			// taken.erase(taken.begin());
+		int who = x[2];
+		if(x[1]==0){
+			int temp;
+			if(free.size()>0){
+				temp = *free.begin();
+				free.erase(free.begin());
+			}else{
+
+				temp = ++mx;
+			}
+			ans[who] = temp;
 		}
 		else{
-			curr++;
-			if(!free.empty()){
-				ans.push_back(free.front());
-				taken.push_back(free.front());
-				free.pop_front();
-				// taken.insert(*free.begin());
-				// free.erase(free.begin());
-			}
-			else {
-				ans.push_back(curr);
-				taken.push_back(curr);
-				// taken.insert(curr);
-			}
+			free.insert(ans[who]);
 		}
-		req = max(req, curr);
 	}
-	cout << req << endl;
-	for(int a : ans ) cout << a << " ";
-	cout << endl;
+
+	cout << mx <<"\n";
+	for(int x : ans) cout << x <<" "; cout <<"\n";
 
 }
 
-int main(){
-	ios_base::sync_with_stdio(false); cin.tie(nullptr);
+signed main(){
+	ios_base::sync_with_stdio(false); cin.tie(0);
+	
 	int t=1;
 	// cin >> t;
 
